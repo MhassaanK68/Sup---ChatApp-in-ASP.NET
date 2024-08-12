@@ -7,7 +7,7 @@ namespace Sup_ChatApp.Hubs
     {
         public async Task SendMessageToAll(MessagePackage msg)
         {
-            if (msg.message != "")
+            if (!string.IsNullOrWhiteSpace(msg.message))
             {
                 await Clients.Others.SendAsync("ReceiveMessage", msg);
             }

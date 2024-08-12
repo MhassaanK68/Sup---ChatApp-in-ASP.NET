@@ -56,11 +56,12 @@
             userName: "Test User",
             message: document.getElementById("message").value
         };
-
-        var spanElement = document.createElement('p');
-        spanElement.className = "your-message"
-        spanElement.textContent = msg.message
-        document.getElementById("chat-content").appendChild(spanElement);
+        if (msg.message != "") {
+            var spanElement = document.createElement('p');
+            spanElement.className = "your-message"
+            spanElement.textContent = msg.message
+            document.getElementById("chat-content").appendChild(spanElement);
+        }
 
         Connection.invoke("SendMessageToAll", msg)
             .catch(function (err) {

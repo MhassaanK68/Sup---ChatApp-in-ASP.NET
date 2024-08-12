@@ -1,0 +1,83 @@
+﻿<head>
+    <link rel="stylesheet" href="~/css/chat.css"/>
+</head>
+
+<div class="container d-flex flex-column h-100 p-4">
+    <div class="row">
+        <div class="col-4 chats-container border-end">
+            <div class="header"><h3><strong>Chats</strong></h3></div>
+
+            <!-- Chat -->
+
+
+            <div class="notification d-flex align-items-center mb-3" style="--color: #06201c;">
+                <div class="icon d-flex align-items-center justify-content-center" style="background-color: #06fad1;">
+                    📢
+                </div>
+                <div class="details flex-grow-1 ml-3 overflow-hidden">
+                    <div class="header d-flex justify-content-between align-items-center font-weight-bold">
+                        <span class="name">All Chat</span>
+                        <span class="time text-muted"></span>
+                    </div>
+                    <p class="description mt-1">Everyone connected to the server can chat</p>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-8 message-container">
+            <div class="header"><h3><strong>Messages</strong></h3></div>
+            <div id="chat-content" class="chat-content mt-3">
+
+            </div>
+            <div class="message-input d-flex align-items-center">
+                <input type="text" id="message" class="form-control" placeholder="Type a message..." />
+                <button id="send" class="btn btn-primary ml-2">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+
+    var Connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+
+    Connection.start()
+        .catch(function (err) {
+            console.error("Error starting connection: ", err.toString());
+        });
+
+
+    // Button //
+    document.getElementById("send").addEventListener("click", function () { 
+     
+        let msg = {
+            userName: "Test User",
+            message: document.getElementById("message").value
+        };
+
+        var spanElement = document.createElement('p');
+        spanElement.className = "your-message"
+        spanElement.textContent = msg.message
+        document.getElementById("chat-content").appendChild(spanElement);
+
+        Connection.invoke("SendMessageToAll", msg)
+            .catch(function (err) {
+                console.error("Error invoking SendMessageToAll: ", err.toString());
+            });
+    
+    });
+
+    
+
+    Connection.on("ReceiveMessage", function (msg) {
+        var encodedMsg = msg.message;
+        var spanElement = document.createElement('p');
+        spanElement.className = "their-message"
+        spanElement.textContent = encodedMsg;
+        document.getElementById("chat-content").appendChild(spanElement);
+        
+
+    });
+</script>
